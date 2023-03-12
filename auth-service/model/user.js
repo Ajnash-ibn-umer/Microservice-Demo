@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 import {Schema} from 'mongoose';
 
 const UserSchema =new Schema({
-    name:String,
-    email:String,
-    password:String,
+    name:{type:String},
+    email:{type:String},
+    password:{type:String},
     createdAt:{type:String,default:Date.now()}
 })
 

@@ -3,26 +3,48 @@ import mongoose from 'mongoose'
 import userSchema from './model/user.js'
 const app = express()
 
-
-
 app.use(express.json())
-app.post('/login', async (req, res) => {
-    console.log('login ...');
+
+// login api
+app.post('/signup', async (req, res) => {
+    console.log('signup ...');
     const { email, password, name } = req.body
 
     const userExist = await userSchema.findOne({ email: email })
     if (userExist) res.send('user is already exist')
-    const user = await new userSchema(
+    const user = await new userSchema({
         name,
         email,
         password,
-    ).save()
-    console.log({user});
-    res.json({user})
+    }).save().catch(err => {
+        console.error(err);
+    })
+    console.log({ user });
+    res.json({ user })
+
+})
+
+// login
+app.post('/login', async (req, res) => {
+
+    try {
+        console.log('login ...');
+        const { email, password } = req.body
+
+        const userExist = await userSchema.findOne({ email: email }).lean()
+        if (!userExist) throw ('user is didnt exist')
+        if (password !== userExist.password) throw ('password is incorrect')
+        console.log({ userExist });
+        return res.json({ userExist })
+    } catch (error) {
+        return res.status(500).send(error.toString())
+        
+    }
+
 
 })
 mongoose.set("strictQuery", false);
-mongoose.connect('mongodb://localhost:27017/auth-service', () => {
+mongoose.connect('mongodb+srv://ajnash:ajnash.aju323@cluster0.ygoojqc.mongodb.net/auth?retryWrites=true&w=majority', () => {
     console.log('mongoose connected');
 })
 
